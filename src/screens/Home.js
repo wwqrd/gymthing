@@ -1,29 +1,28 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-// import Sets from '../components/Sets';
+import { map, uniq } from 'lodash';
+import Groups from '../components/Groups';
 import './Home.css';
 
 class Home extends PureComponent {
   constructor(props) {
     super(props);
 
-    this.state = { addSet: false };
+    this.state = { addGroup: false };
   }
 
-  onAddSet = () => {
-    this.setState({ addSet: true });
+  onAddGroup = () => {
+    this.setState({ addGroup: true });
   }
 
   render() {
-
-    console.log(this.props);
     return (
       <div className="home">
-        { this.state.addSet && <Redirect to="/set/new" /> }
-        <button className="home__add-new" onClick={this.onAddSet}>Create new set</button>
-        <div className="home__sets" >
-          {/* <Sets sets={this.props.sets} /> */}
+        { this.state.addGroup && <Redirect to="/group/new" /> }
+        <button className="home__add-new" onClick={this.onAddGroup}>Create new group</button>
+        <div className="home__groups" >
+          <Groups groups={this.props.groups} />
         </div>
       </div>
     );
@@ -31,8 +30,13 @@ class Home extends PureComponent {
 }
 
 function mapStateToProps(state) {
+  const exercises = state.exercises;
+  const groups = uniq(map(exercises, 'group'));
+
+  console.log({ groups });
+
   return {
-    sets: state.sets,
+    groups,
   };
 }
 

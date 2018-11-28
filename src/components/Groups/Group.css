@@ -1,0 +1,13 @@
+.groups-group {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  background: green;
+}
+
+.groups-group__exercises {
+  display: flex;
+  flex-direction: column;
+  background: red;
+  flex: 0 1 50%;
+}
