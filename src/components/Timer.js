@@ -23,6 +23,8 @@ class Timer extends Component {
     }, () => {
       this.update();
     });
+
+    this.props.onStart();
   }
 
   stop = () => {
@@ -30,6 +32,8 @@ class Timer extends Component {
       active: false,
       time: Duration.fromMillis(0),
     });
+
+    this.props.onStop();
   };
 
   update = () => {
@@ -53,6 +57,7 @@ class Timer extends Component {
 
   handleClickTime = () => {
     this.start();
+    if (this.state.active) { this.props.onReset(); }
   }
 
   handleClickDone = (e) => {
@@ -71,5 +76,9 @@ class Timer extends Component {
     );
   }
 }
+
+Timer.defaultProps = {
+  onReset: () => {},
+};
 
 export default Timer;

@@ -5,6 +5,26 @@ import Units from '../Units';
 import Timer from '../Timer';
 
 class Exercise extends PureComponent {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      sets: 0,
+    };
+  }
+
+  handleTimerStart = () => {
+    this.setState({ sets: this.state.sets + 1 });
+  }
+
+  handleTimerStop = () => {
+    this.setState({ sets: 0 });
+  }
+
+  handleTimerReset = () => {
+    this.setState({ sets: this.state.sets + 1 });
+  }
+
   render() {
     return (
       <div>
@@ -17,10 +37,14 @@ class Exercise extends PureComponent {
         <div>
           <div>Weight: <Units value={this.props.weight} type="weight" /></div>
           <div>Reps: {this.props.reps}</div>
-          <div>Sets: {this.props.sets}</div>
         </div>
         <div>
-          <Timer />
+          <Timer
+            onStart={this.handleTimerStart}
+            onStop={this.handleTimerStop}
+            onReset={this.handleTimerReset}
+          />
+          Set {this.state.sets}/{this.props.sets}
         </div>
       </div>
     );
