@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-import { map, uniq } from 'lodash';
-import Groups from '../components/Groups';
-import './Home.css';
+import { map, groupBy } from 'lodash';
+import Group from './Group';
 
 class Home extends PureComponent {
   constructor(props) {
@@ -18,11 +17,19 @@ class Home extends PureComponent {
 
   render() {
     return (
-      <div className="home">
+      <div>
         { this.state.addGroup && <Redirect to="/group/new" /> }
-        <button className="home__add-new" onClick={this.onAddGroup}>Create new group</button>
-        <div className="home__groups" >
-          <Groups groups={this.props.groups} />
+        <button onClick={this.onAddGroup}>Create new group</button>
+        <div>
+          {map(
+            this.props.groups,
+            (exercises, group) =>
+              <Group
+                key={group}
+                exercises={exercises}
+                group={group}
+              />
+          )}
         </div>
       </div>
     );
@@ -31,9 +38,7 @@ class Home extends PureComponent {
 
 function mapStateToProps(state) {
   const exercises = state.exercises;
-  const groups = uniq(map(exercises, 'group'));
-
-  console.log({ groups });
+  const groups = groupBy(exercises, 'group');
 
   return {
     groups,

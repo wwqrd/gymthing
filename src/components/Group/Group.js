@@ -1,32 +1,37 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import Exercise from './Exercise';
-import './Group.css';
 
 class Group extends PureComponent {
   render() {
     return (
-      <a className="groups-group">
-        <div className="groups-group__exercises">
+      <div>
+        <div>
           { this.props.exercises.map(
             ({ ...props }) =>
               <Exercise {...props} key={props.id} />
           ) }
         </div>
-        <div className="groups-group__last-completed">
+        <div>
           {this.props.group}
         </div>
-      </a>
+      </div>
     );
   }
 }
 
-const mapStateToProps = (state, { group }) => ({
-  exercises: state.exercises.filter(
-    exercise => group === exercise.group,
-  )
-});
+function mapStateToProps(state, props) {
+  const exercises = state.exercises;
+  const groupId = props.match &&
+    props.match.params &&
+    props.match.params.groupId;
+  const groupExercises = exercises.filter(
+    exercise => exercise.group === groupId,
+  );
 
-export { Group };
+  return {
+    exercises: groupExercises,
+  };
+}
 
 export default connect(mapStateToProps)(Group);
