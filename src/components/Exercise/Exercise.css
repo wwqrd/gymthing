@@ -1,0 +1,42 @@
+.Exercise {
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  transition: background-color 500ms ease;
+}
+
+.Exercise__meta {
+  flex: 0 0 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.Exercise__timer {
+  flex: 0 0 40%;
+}
+
+.Exercise__progress {
+  flex: 0 0 10%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.Exercise--duration-hypertrophy {
+  background-color: red;
+}
+
+.Exercise--duration-strength {
+  background-color: orange;
+}
+
+.Exercise--duration-endurance {
+  background-color: green;
+}

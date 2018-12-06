@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Duration } from 'luxon';
+import './Timer.css';
 
 const TIMER_FORMAT = 'm:ss';
 
@@ -46,6 +47,8 @@ class Timer extends Component {
       time,
     });
 
+    this.props.onTick(time);
+
     window.requestAnimationFrame(() => this.update());
   }
 
@@ -67,11 +70,18 @@ class Timer extends Component {
 
   render() {
     return (
-      <div>
-        <div onClick={this.handleClickTime}>
+      <div className="Timer">
+        <div
+          onClick={this.handleClickTime}
+          className="Timer__time"
+        >
           {this.state.time && this.state.time.toFormat(TIMER_FORMAT)}
         </div>
-        <button type="button" onClick={this.handleClickDone}>Done</button>
+        <button
+          className="Timer__stop"
+          type="button"
+          onClick={this.handleClickDone}
+        >Done</button>
       </div>
     );
   }

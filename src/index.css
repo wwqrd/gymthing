@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css?family=PT+Mono');
+
+html,
 body {
   margin: 0;
   padding: 0;
@@ -6,6 +9,12 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
+}
+
+h1, h2, h3, p {
+  margin: 0;
+  line-height: 1.2;
 }
 
 code {

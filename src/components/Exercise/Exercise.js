@@ -3,6 +3,13 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Units from '../Units';
 import Timer from '../Timer';
+import './Exercise.css';
+
+const getPhase = (time) => {
+  if (time < 0.1) { return 'hypertrophy'; }
+  if (time < 0.2) { return 'strength'; }
+  return 'endurance';
+}
 
 class Exercise extends PureComponent {
   constructor(props) {
@@ -10,40 +17,56 @@ class Exercise extends PureComponent {
 
     this.state = {
       sets: 0,
+      phase: null,
     };
   }
 
   handleTimerStart = () => {
-    this.setState({ sets: this.state.sets + 1 });
+    this.setState({ sets: this.state.sets + 1, phase: getPhase(0) });
   }
 
   handleTimerStop = () => {
-    this.setState({ sets: 0 });
+    this.setState({ sets: 0, phase: null });
+  }
+
+  handleTimerTick = (time) => {
+    this.setState({ phase: getPhase(time.as('minutes')) });
   }
 
   handleTimerReset = () => {
-    this.setState({ sets: this.state.sets + 1 });
+    this.setState({ sets: this.state.sets + 1, phase: getPhase(0) });
   }
 
   render() {
+    const phaseClass = this.state.phase ? `Exercise--duration-${this.state.phase}` : '';
+
     return (
-      <div>
-        <Link to={`/group/${this.props.group}`}>
-          {this.props.group}
-        </Link>
-        <div>
-          { this.props.name }
+      <div className={`Exercise ${phaseClass}`}>
+        <div className="Exercise__meta">
+          <Link to={`/group/${this.props.group}`}>
+            Back to group {this.props.group}
+          </Link>
+
+          <div className="Exercise__name">
+            { this.props.name }
+          </div>
+
+          <div className="Exercise__stats">
+            <div>Weight: <Units value={this.props.weight} type="weight" /></div>
+            <div>Reps: {this.props.reps}</div>
+          </div>
         </div>
-        <div>
-          <div>Weight: <Units value={this.props.weight} type="weight" /></div>
-          <div>Reps: {this.props.reps}</div>
-        </div>
-        <div>
+
+        <div className="Exercise__timer">
           <Timer
             onStart={this.handleTimerStart}
             onStop={this.handleTimerStop}
+            onTick={this.handleTimerTick}
             onReset={this.handleTimerReset}
           />
+        </div>
+
+        <div className="Exercise__progress">
           Set {this.state.sets}/{this.props.sets}
         </div>
       </div>

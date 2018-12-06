@@ -9,7 +9,6 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Link to="/"><h1>thing</h1></Link>
         <Switch>
           <Route exact path="/exercise/:exerciseId" component={Exercise}/>
           <Route exact path="/group/:groupId" component={Group}/>
