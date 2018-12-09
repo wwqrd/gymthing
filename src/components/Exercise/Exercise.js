@@ -60,7 +60,7 @@ class Exercise extends PureComponent {
 
   handleTimerTick = (time) => {
     this.setState({
-      phases: getPhases(time.as('minutes')*50)
+      phases: getPhases(time.as('minutes'))
     });
   }
 
