@@ -81,7 +81,7 @@ class Timer extends Component {
           className="Timer__stop"
           type="button"
           onClick={this.handleClickDone}
-        >Done</button>
+        >Reset</button>
       </div>
     );
   }
@@ -89,6 +89,9 @@ class Timer extends Component {
 
 Timer.defaultProps = {
   onReset: () => {},
+  onStop: () => {},
+  onTick: () => {},
+  onStart: () => {},
 };
 
 export default Timer;

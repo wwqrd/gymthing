@@ -1,62 +1,99 @@
 import React, { PureComponent } from 'react';
-import { connect } from 'react-redux';
+import cx from 'classnames';
 import { Link } from 'react-router-dom';
 import Units from '../Units';
 import Timer from '../Timer';
 import './Exercise.css';
 
-const getPhase = (time) => {
-  if (time < 0.1) { return 'hypertrophy'; }
-  if (time < 0.2) { return 'strength'; }
-  return 'endurance';
+const PHASES = [
+  'endurance',
+  'power',
+  'hypertrophy',
+  'strength',
+];
+
+const getPhases = (time) => {
+  let phases = [];
+  if (time < 1) { phases.push('endurance'); }
+  if (time > 1 && time < 2) { phases.push('power'); }
+  if (time < 2) { phases.push('hypertrophy'); }
+  if (time > 2 && time < 5) { phases.push('strength'); }
+  return phases;
 }
 
 class Exercise extends PureComponent {
+  static defaultProps = {
+    sets: 3,
+    weight: 0,
+    reps: 0,
+  };
+
   constructor(props) {
     super(props);
 
     this.state = {
-      sets: 0,
-      phase: null,
+      completedSets: 0,
+      active: false,
+      phases: [],
     };
   }
 
+  get isOverResting() {
+    return this.state.active && this.state.phases.length === 0;
+  };
+
   handleTimerStart = () => {
-    this.setState({ sets: this.state.sets + 1, phase: getPhase(0) });
+    this.setState({
+      completedSets: this.state.completedSets + 1,
+      active: true,
+      phases: getPhases(0),
+    });
   }
 
   handleTimerStop = () => {
-    this.setState({ sets: 0, phase: null });
+    this.setState({
+      completedSets: 0,
+      active: false,
+      phases: [],
+    });
   }
 
   handleTimerTick = (time) => {
-    this.setState({ phase: getPhase(time.as('minutes')) });
+    this.setState({
+      phases: getPhases(time.as('minutes')*50)
+    });
   }
 
   handleTimerReset = () => {
-    this.setState({ sets: this.state.sets + 1, phase: getPhase(0) });
+    this.setState({
+      completedSets: this.state.completedSets + 1,
+      phases: getPhases(0)
+    });
   }
 
+  renderPhase = (phase) => {
+    const phaseClasses = cx(
+      'Exercise__phase',
+      { 'Exercise__phase--active': this.state.phases.includes(phase) },
+    );
+
+    return <div className={phaseClasses}>{phase}</div>;
+  };
+
   render() {
-    const phaseClass = this.state.phase ? `Exercise--duration-${this.state.phase}` : '';
+    const exerciseClasses = cx(
+      'Exercise',
+      this.state.phases.map(phase => `Exercise--phase-${phase}`),
+      { 'Exercise--over-resting': this.isOverResting },
+    );
 
     return (
-      <div className={`Exercise ${phaseClass}`}>
+      <div className={`${exerciseClasses}`}>
         <div className="Exercise__meta">
-          <Link to={`/group/${this.props.group}`}>
-            Back to group {this.props.group}
-          </Link>
-
-          <div className="Exercise__name">
-            { this.props.name }
-          </div>
-
-          <div className="Exercise__stats">
-            <div>Weight: <Units value={this.props.weight} type="weight" /></div>
-            <div>Reps: {this.props.reps}</div>
+          <div className="Exercise__phases">
+            {PHASES.map(this.renderPhase)}
           </div>
         </div>
-
         <div className="Exercise__timer">
           <Timer
             onStart={this.handleTimerStart}
@@ -67,27 +104,11 @@ class Exercise extends PureComponent {
         </div>
 
         <div className="Exercise__progress">
-          Set {this.state.sets}/{this.props.sets}
+          Completed sets: {this.state.completedSets}
         </div>
       </div>
     );
   }
 }
 
-function mapStateToProps(state, props) {
-  const exercises = state.exercises;
-  const exerciseId = props.match &&
-    props.match.params &&
-    props.match.params.exerciseId;
-  const exercise = exercises.find(
-    exercise => exercise.id === exerciseId,
-  );
-
-  console.log({ exercise, exercises });
-
-  return {
-    ...exercise,
-  };
-}
-
-export default connect(mapStateToProps)(Exercise);
+export default Exercise;

@@ -6,7 +6,9 @@
   position: absolute;
   display: flex;
   flex-direction: column;
-  transition: background-color 500ms ease;
+  transition: background-color 500ms ease,
+    opacity 500ms ease,
+    color 500ms ease;
 }
 
 .Exercise__meta {
@@ -17,26 +19,53 @@
   align-items: center;
 }
 
+.Exercise__phases {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Exercise__phase {
+  font-size: 2rem;
+  margin: 0 2rem;
+  opacity: 0.1;
+  transition: opacity 500ms ease;
+}
+
+.Exercise__phase--active {
+  font-size: 2rem;
+  margin: 0 2rem;
+  opacity: 1;
+}
+
 .Exercise__timer {
   flex: 0 0 40%;
 }
 
 .Exercise__progress {
-  flex: 0 0 10%;
+  flex: 0 0 30%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  font-size: 2rem;
 }
 
-.Exercise--duration-hypertrophy {
-  background-color: red;
+.Exercise--over-resting {
+  opacity: 0.5;
 }
 
-.Exercise--duration-strength {
-  background-color: orange;
+.Exercise--phase-hypertrophy {
 }
 
-.Exercise--duration-endurance {
-  background-color: green;
+.Exercise--phase-endurance {
+  background-color: #57a773;
+}
+
+.Exercise--phase-power {
+  background-color: #ee6352;
+}
+
+.Exercise--phase-strength {
+  background-color: #08b2e3;
 }
