@@ -4,6 +4,8 @@
   top: 0;
   left: 0;
   position: absolute;
+  box-sizing: border-box;
+  padding: 10px;
   display: flex;
   flex-direction: column;
   transition: background-color 500ms ease,
@@ -33,8 +35,6 @@
 }
 
 .Exercise__phase--active {
-  font-size: 2rem;
-  margin: 0 2rem;
   opacity: 1;
 }
 
@@ -68,4 +68,31 @@
 
 .Exercise--phase-strength {
   background-color: #08b2e3;
+}
+
+@media screen and (max-width: 800px) {
+
+  .Exercise__meta {
+    flex-basis: 40%;
+  }
+
+  .Exercise__timer {
+    flex-basis: 40%;
+  }
+
+  .Exercise__progress {
+    flex-basis: 20%;
+  }
+
+  .Exercise__phases {
+    flex-wrap: wrap;
+  }
+
+  .Exercise__phase {
+    font-size: 1.5rem;
+  }
+
+  .Exercise__progress {
+    font-size: 1.5rem;
+  }
 }

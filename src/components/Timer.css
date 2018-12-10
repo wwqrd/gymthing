@@ -24,3 +24,10 @@
   padding: 0 10px;
   height: 30px;
 }
+
+@media screen and (max-width: 800px) {
+  .Timer__time {
+    font-size: calc(22vh);
+    line-height: calc(22vh);
+  }
+}
