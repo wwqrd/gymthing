@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/gymthing/precache-manifest.6a3bd8adeba3a7359ecf52e6e902f830.js"
+  "/gymthing/precache-manifest.73aece1e2fb2485b7b28246506db87a3.js"
 );
 
 workbox.clientsClaim();
