@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import cx from 'classnames';
 import { Link } from 'react-router-dom';
 import Units from '../Units';
+import clock from '../../clock';
 import Timer from '../Timer';
 import './Exercise.css';
 
@@ -31,9 +32,15 @@ class Exercise extends PureComponent {
   constructor(props) {
     super(props);
 
+    this.clock = clock({
+      onTick: this.handleTimerTick,
+      onReset: this.handleTimerReset,
+    });
+
     this.state = {
       completedSets: 0,
       active: false,
+      time: this.clock.time,
       phases: [],
     };
   }
@@ -42,33 +49,52 @@ class Exercise extends PureComponent {
     return this.state.active && this.state.phases.length === 0;
   };
 
-  handleTimerStart = () => {
+  handleClick = () => {
+    if (this.state.active) {
+      this.clock.stop();
+
+      this.setState({
+        completedSets: this.state.completedSets + 1,
+        active: false,
+        time: this.clock.time,
+        phases: [],
+      });
+
+      return;
+    }
+
     this.setState({
-      completedSets: this.state.completedSets + 1,
       active: true,
       phases: getPhases(0),
     });
+
+    this.clock.start();
   }
 
-  handleTimerStop = () => {
+  handleFinishExercise = (e) => {
+    e.stopPropagation();
+
     this.setState({
       completedSets: 0,
       active: false,
       phases: [],
     });
+
+    this.clock.stop();
   }
 
   handleTimerTick = (time) => {
     this.setState({
+      time: time,
       phases: getPhases(time.as('minutes'))
     });
   }
 
   handleTimerReset = () => {
-    this.setState({
-      completedSets: this.state.completedSets + 1,
-      phases: getPhases(0)
-    });
+    // this.setState({
+    //   completedSets: this.state.completedSets + 1,
+    //   phases: getPhases(0)
+    // });
   }
 
   renderPhase = (phase) => {
@@ -88,23 +114,21 @@ class Exercise extends PureComponent {
     );
 
     return (
-      <div className={`${exerciseClasses}`}>
+      <div
+        className={`${exerciseClasses}`}
+        onClick={this.handleClick}
+      >
         <div className="Exercise__meta">
           <div className="Exercise__phases">
             {PHASES.map(this.renderPhase)}
           </div>
         </div>
         <div className="Exercise__timer">
-          <Timer
-            onStart={this.handleTimerStart}
-            onStop={this.handleTimerStop}
-            onTick={this.handleTimerTick}
-            onReset={this.handleTimerReset}
-          />
+          <Timer time={this.state.time} />
         </div>
-
         <div className="Exercise__progress">
-          Completed sets: {this.state.completedSets}
+          <div className="Exercise__sets">Completed sets: {this.state.completedSets}</div>
+          <button type="button" onClick={this.handleFinishExercise}>Finish exercise (reset)</button>
         </div>
       </div>
     );

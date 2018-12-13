@@ -51,6 +51,10 @@
   font-size: 2rem;
 }
 
+.Exercise__sets {
+  margin: 0 0 10px;
+}
+
 .Exercise--over-resting {
   opacity: 0.5;
 }
