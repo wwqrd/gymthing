@@ -31,10 +31,15 @@
   font-size: 2rem;
   margin: 0 2rem;
   opacity: 0.1;
-  transition: opacity 500ms ease;
+  transition: opacity 500ms ease, color 500ms ease;
 }
 
 .Exercise__phase--active {
+  opacity: 1;
+  color: white;
+}
+
+.Exercise__phase--complete {
   opacity: 1;
 }
 
@@ -51,6 +56,16 @@
   font-size: 2rem;
 }
 
+.Exercise__finish {
+  border: 0;
+  background: black;
+  color: white;
+  padding: 0 15px;
+  height: 40px;
+  font-size: 16px;
+  line-height: 40px;
+}
+
 .Exercise__sets {
   margin: 0 0 10px;
 }
@@ -59,11 +74,12 @@
   opacity: 0.5;
 }
 
-.Exercise--phase-hypertrophy {
-}
-
 .Exercise--phase-endurance {
   background-color: #57a773;
+}
+
+.Exercise--phase-hypertrophy {
+  background-color: #ee6352;
 }
 
 .Exercise--phase-power {

@@ -6,21 +6,37 @@ import clock from '../../clock';
 import Timer from '../Timer';
 import './Exercise.css';
 
+// name, min, max
 const PHASES = [
-  'endurance',
-  'power',
-  'hypertrophy',
-  'strength',
+  ['endurance', 0, 1],
+  ['hypertrophy', 1, 3],
+  ['strength', 3, 5],
 ];
 
-const getPhases = (time) => {
-  let phases = [];
-  if (time < 1) { phases.push('endurance'); }
-  if (time > 1 && time < 2) { phases.push('power'); }
-  if (time < 2) { phases.push('hypertrophy'); }
-  if (time > 2 && time < 5) { phases.push('strength'); }
-  return phases;
-}
+const getPhases = time =>
+  PHASES.reduce(
+    (acc, [name, min, max]) => {
+      if (time >= min && time < max) {
+        acc.active.push(name);
+      }
+      if (time >= max) {
+        acc.complete.push(name);
+      }
+
+      return acc;
+    },
+    { active: [], complete: [] },
+  );
+
+const initialState = {
+  completedSets: 0,
+  active: false,
+  time: null,
+  phases: {
+    active: [],
+    complete: [],
+  },
+};
 
 class Exercise extends PureComponent {
   static defaultProps = {
@@ -35,72 +51,109 @@ class Exercise extends PureComponent {
     this.clock = clock({
       onTick: this.handleTimerTick,
       onReset: this.handleTimerReset,
+      onStart: this.handleTimerStart,
+      onStop: this.handleTimerStop,
     });
 
     this.state = {
-      completedSets: 0,
-      active: false,
+      ...initialState,
       time: this.clock.time,
-      phases: [],
     };
   }
 
   get isOverResting() {
-    return this.state.active && this.state.phases.length === 0;
+    return this.state.active && this.state.phases.complete.length === PHASES.length;
   };
 
-  handleClick = () => {
-    if (this.state.active) {
-      this.clock.stop();
-
-      this.setState({
-        completedSets: this.state.completedSets + 1,
-        active: false,
-        time: this.clock.time,
-        phases: [],
-      });
-
-      return;
-    }
-
+  start() {
     this.setState({
       active: true,
-      phases: getPhases(0),
+      phases: {
+        active: [],
+        complete: [],
+      },
     });
 
     this.clock.start();
   }
 
+  stop() {
+    this.clock.stop();
+    this.clock.reset();
+
+    this.setState({
+      ...initialState,
+      completedSets: this.state.completedSets + 1,
+      time: this.clock.time,
+    });
+  }
+
+  toggle() {
+    if (this.state.active) {
+      this.stop();
+
+      return;
+    }
+
+    this.start();
+  }
+
+  finishExercise() {
+    this.clock.stop();
+    this.clock.reset();
+
+    this.setState({
+      ...initialState,
+      completedSets: 0,
+      time: this.clock.time,
+    });
+  }
+
+  updateTime = (time) => {
+    const minutes = time.as('minutes');
+    const phases = getPhases(minutes);
+
+    this.setState({
+      time,
+      phases,
+    });
+  }
+
+  handleClick = () => {
+    this.toggle();
+  }
+
   handleFinishExercise = (e) => {
     e.stopPropagation();
 
-    this.setState({
-      completedSets: 0,
-      active: false,
-      phases: [],
-    });
+    this.finishExercise();
+  }
 
-    this.clock.stop();
+  handleTimerStart = (time) => {
+    this.updateTime(time);
+  }
+
+  handleTimerStop = (time) => {
+    this.updateTime(time);
   }
 
   handleTimerTick = (time) => {
-    this.setState({
-      time: time,
-      phases: getPhases(time.as('minutes'))
-    });
+    this.updateTime(time);
   }
 
-  handleTimerReset = () => {
-    // this.setState({
-    //   completedSets: this.state.completedSets + 1,
-    //   phases: getPhases(0)
-    // });
+  handleTimerReset = (time) => {
+    this.updateTime(time);
   }
 
-  renderPhase = (phase) => {
+  renderPhase = ([phase]) => {
+    const { active, complete } = this.state.phases;
+
     const phaseClasses = cx(
       'Exercise__phase',
-      { 'Exercise__phase--active': this.state.phases.includes(phase) },
+      {
+        'Exercise__phase--active': active.includes(phase),
+        'Exercise__phase--complete': complete.includes(phase),
+      },
     );
 
     return <div className={phaseClasses}>{phase}</div>;
@@ -109,8 +162,11 @@ class Exercise extends PureComponent {
   render() {
     const exerciseClasses = cx(
       'Exercise',
-      this.state.phases.map(phase => `Exercise--phase-${phase}`),
-      { 'Exercise--over-resting': this.isOverResting },
+      this.state.phases.active.map(phase => `Exercise--phase-${phase}`),
+      {
+        'Exercise--active': this.state.active,
+        'Exercise--over-resting': this.isOverResting,
+      },
     );
 
     return (
@@ -128,7 +184,11 @@ class Exercise extends PureComponent {
         </div>
         <div className="Exercise__progress">
           <div className="Exercise__sets">Completed sets: {this.state.completedSets}</div>
-          <button type="button" onClick={this.handleFinishExercise}>Finish exercise (reset)</button>
+          <button
+            type="button"
+            className="Exercise__finish"
+            onClick={this.handleFinishExercise}
+          >Finish exercise (reset)</button>
         </div>
       </div>
     );

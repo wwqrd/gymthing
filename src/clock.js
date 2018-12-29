@@ -35,8 +35,10 @@ class Clock {
   };
 
   start = () => {
+    window.cancelAnimationFrame(this.requestId);
+
     if (this.active) {
-      this.callbacks.onReset();
+      this.reset();
     }
 
     this.active = true;
@@ -47,24 +49,30 @@ class Clock {
     });
 
     this.update();
-    this.callbacks.onStart();
+    this.callbacks.onStart(this.clock.time);
   }
 
   stop = () => {
-    this.active = false;
     window.cancelAnimationFrame(this.requestId);
+    this.active = false;
+
+    this.callbacks.onStop(this.clock.time);
+  };
+
+  reset = () => {
+    window.cancelAnimationFrame(this.requestId);
+    this.callbacks.onReset(this.clock.time);
 
     this.setClock({
-      start: null,
+      start: new Date(),
       time: Duration.fromMillis(0),
     });
-
-    this.callbacks.onStop();
   };
 
   tick = () => {
     const now = new Date();
-    const time = Duration.fromMillis(now - this.clock.start);
+    const d = now - this.clock.start
+    const time = Duration.fromMillis(d);
 
     this.callbacks.onTick(time);
 
