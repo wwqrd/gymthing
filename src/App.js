@@ -11,11 +11,10 @@ class App extends Component {
     return (
       <div className="App">
         <Switch>
-          <Route exact path="/exercise" component={Exercise}/>
-          <Redirect to="/exercise" />
-          {/* <Route exact path="/exercise/:exerciseId" component={Exercise}/>
-          <Route exact path="/group/:groupId" component={Group}/>
-          <Route path="/" component={Home}/> */}
+          <Route exact path="/exercise/:id" component={Exercise}/>
+          {/* <Route exact path="/group/:groupId" component={Group}/> */}
+          {/* <Route path="/" component={Home}/> */}
+          <Redirect to="/exercise/foo" />
         </Switch>
       </div>
     );

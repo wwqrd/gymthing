@@ -1,10 +1,12 @@
 import React, { PureComponent } from 'react';
+import { connect } from 'react-redux';
 import cx from 'classnames';
 import { Link } from 'react-router-dom';
 import Units from '../Units';
 import clock from '../../clock';
 import Timer from '../Timer';
 import Field from '../Field';
+import { actionCreators } from '../../ducks/exercises';
 import './Exercise.css';
 
 // name, min, max
@@ -158,6 +160,15 @@ class Exercise extends PureComponent {
     this.updateTime(time);
   }
 
+  handleUpdateField = property =>
+    (value) => {
+      const values = {
+        [property]: value,
+      };
+      this.props.updateExercise(values);
+      console.log(this.props.id, values);
+    };
+
   renderPhase = ([phase]) => {
     const { active, complete } = this.state.phases;
 
@@ -199,18 +210,21 @@ class Exercise extends PureComponent {
           <Parameter label="Weight">
             <Field
               value={this.props.weight}
+              onChange={this.handleUpdateField('weight')}
               unit="kg"
             />
           </Parameter>
           <Parameter label="Reps">
             <Field
               value={this.props.reps}
+              onChange={this.handleUpdateField('reps')}
             />
           </Parameter>
           <Parameter label="Sets">
             {this.state.completedSets} /
             <Field
               value={this.props.sets}
+              onChange={this.handleUpdateField('sets')}
             />
           </Parameter>
         </div>
@@ -226,4 +240,27 @@ class Exercise extends PureComponent {
   }
 }
 
-export default Exercise;
+const mapStateToProps = (state, props) => {
+  const exercise = state.exercises.find(({ id }) => id === props.match.params.id);
+
+  if (!exercise) { return {}; }
+
+  return {
+    id: props.match.params.id,
+    weight: exercise.weight,
+    reps: exercise.reps,
+    sets: exercise.sets,
+  };
+};
+
+const mapDispatchToProps = (dispatch, props) => ({
+  updateExercise: values =>
+    dispatch(actionCreators.updateExercise(props.match.params.id, values)),
+});
+
+export { Exercise };
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Exercise);
