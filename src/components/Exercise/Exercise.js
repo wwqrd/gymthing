@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Units from '../Units';
 import clock from '../../clock';
 import Timer from '../Timer';
+import Field from '../Field';
 import './Exercise.css';
 
 // name, min, max
@@ -37,6 +38,18 @@ const initialState = {
     complete: [],
   },
 };
+
+const Parameter = ({
+  label,
+  children,
+}) => (
+  <div className="Exercise__parameter">
+    <div className="Exercise__label">{label}</div>
+    <div className="Exercise__value">
+      {children}
+    </div>
+  </div>
+);
 
 class Exercise extends PureComponent {
   static defaultProps = {
@@ -174,7 +187,7 @@ class Exercise extends PureComponent {
         className={`${exerciseClasses}`}
         onClick={this.handleClick}
       >
-        <div className="Exercise__meta">
+        <div className="Exercise__timer-meta">
           <div className="Exercise__phases">
             {PHASES.map(this.renderPhase)}
           </div>
@@ -182,8 +195,26 @@ class Exercise extends PureComponent {
         <div className="Exercise__timer">
           <Timer time={this.state.time} />
         </div>
-        <div className="Exercise__progress">
-          <div className="Exercise__sets">Completed sets: {this.state.completedSets}</div>
+        <div className="Exercise__meta">
+          <Parameter label="Weight">
+            <Field
+              value={this.props.weight}
+              unit="kg"
+            />
+          </Parameter>
+          <Parameter label="Reps">
+            <Field
+              value={this.props.reps}
+            />
+          </Parameter>
+          <Parameter label="Sets">
+            {this.state.completedSets} /
+            <Field
+              value={this.props.sets}
+            />
+          </Parameter>
+        </div>
+        <div className="Exercise__controls">
           <button
             type="button"
             className="Exercise__finish"
