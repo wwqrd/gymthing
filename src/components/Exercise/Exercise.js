@@ -6,30 +6,9 @@ import Units from '../Units';
 import clock from '../../clock';
 import Timer from '../Timer';
 import Field from '../Field';
+import Phases, { PHASES, getPhases } from './Phases';
 import { actionCreators } from '../../ducks/exercises';
 import './Exercise.css';
-
-// name, min, max
-const PHASES = [
-  ['endurance', 0, 1],
-  ['hypertrophy', 1, 3],
-  ['strength', 3, 5],
-];
-
-const getPhases = time =>
-  PHASES.reduce(
-    (acc, [name, min, max]) => {
-      if (time >= min && time < max) {
-        acc.active.push(name);
-      }
-      if (time >= max) {
-        acc.complete.push(name);
-      }
-
-      return acc;
-    },
-    { active: [], complete: [] },
-  );
 
 const initialState = {
   completedSets: 0,
@@ -55,6 +34,7 @@ const Parameter = ({
 
 class Exercise extends PureComponent {
   static defaultProps = {
+    name: '',
     sets: 3,
     weight: 0,
     reps: 0,
@@ -169,20 +149,6 @@ class Exercise extends PureComponent {
       console.log(this.props.id, values);
     };
 
-  renderPhase = ([phase]) => {
-    const { active, complete } = this.state.phases;
-
-    const phaseClasses = cx(
-      'Exercise__phase',
-      {
-        'Exercise__phase--active': active.includes(phase),
-        'Exercise__phase--complete': complete.includes(phase),
-      },
-    );
-
-    return <div className={phaseClasses}>{phase}</div>;
-  };
-
   render() {
     const exerciseClasses = cx(
       'Exercise',
@@ -196,17 +162,23 @@ class Exercise extends PureComponent {
     return (
       <div
         className={`${exerciseClasses}`}
-        onClick={this.handleClick}
       >
         <div className="Exercise__timer-meta">
-          <div className="Exercise__phases">
-            {PHASES.map(this.renderPhase)}
-          </div>
+          <Phases {...this.state.phases} />
         </div>
-        <div className="Exercise__timer">
+        <div
+          className="Exercise__timer"
+          onClick={this.handleClick}
+        >
           <Timer time={this.state.time} />
         </div>
         <div className="Exercise__meta">
+          <Parameter label="Name">
+            <Field
+              value={this.props.name}
+              onChange={this.handleUpdateField('name')}
+            />
+          </Parameter>
           <Parameter label="Weight">
             <Field
               value={this.props.weight}
